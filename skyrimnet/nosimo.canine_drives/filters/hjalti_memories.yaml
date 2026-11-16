@@ -1,0 +1,5 @@
+kind: memory
+name: Hjalti forms memories
+description: Hjalti (Canine Drives, SN_Dog.esp) forms memories even where animals are kept from forming them, so he can remember his hunts, his dreams and his people.
+RaceWhitelist:
+  - HjaltiRace

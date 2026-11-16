@@ -1,0 +1,4 @@
+kind: tts_rule
+id: hjalti_pronunciation
+pattern: \bHjalti\b
+replacement: "\tHYAL-tee"

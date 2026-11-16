@@ -1,0 +1,1042 @@
+plugin:
+  name: "Canine Drives"
+  version: "0.26.7"
+  description: >-
+    Bodily needs for a dog companion: hunger, affection, restlessness, tiredness and missing you. They rise
+    and fall with game time and what the dog is doing, are saved with your game, and his strongest needs
+    reach his prompt as plain facts about his body. Rates are per game hour; 0-100 for every drive, higher
+    means a stronger need. Changes apply within about five seconds, no restart needed.
+  icon: "🐕"
+
+schema:
+  fields:
+    # --- General -------------------------------------------------------------------------------------
+    - name: "Enabled"
+      path: "general.enabled"
+      type: "bool"
+      description: "Drives change over time. Off freezes them where they are (the prompt keeps showing the current needs)."
+      defaultValue: true
+      category: "General"
+
+    - name: "Dog"
+      path: "general.actor"
+      type: "string"
+      description: "The dog to track, as Plugin.esp|0xLocalID: a placed reference, or an NPC record to track whichever reference of it is loaded. The default is Hjalti (SN_Dog.esp)."
+      defaultValue: "SN_Dog.esp|0x800"
+      category: "General"
+
+    # --- Rates ---------------------------------------------------------------------------------------
+    - name: "Hunger Rise"
+      path: "hunger.rate"
+      type: "float"
+      description: "Hunger gained per game hour, asleep or awake."
+      defaultValue: 4.0
+      min: 0.0
+      max: 100.0
+      category: "Rates"
+
+    - name: "Affection Rise"
+      path: "affection.rate"
+      type: "float"
+      description: "Need for affection gained per waking game hour."
+      defaultValue: 3.0
+      min: 0.0
+      max: 100.0
+      category: "Rates"
+
+    - name: "Restlessness Rise (idle)"
+      path: "restless.idle_rate"
+      type: "float"
+      description: "Restlessness gained per waking game hour while he isn't travelling."
+      defaultValue: 10.0
+      min: 0.0
+      max: 100.0
+      category: "Rates"
+
+    - name: "Restlessness Drain (travelling)"
+      path: "restless.travel_drain"
+      type: "float"
+      description: "Restlessness lost per game hour while he is on the move."
+      defaultValue: 25.0
+      min: 0.0
+      max: 200.0
+      category: "Rates"
+
+    - name: "Tiredness Rise"
+      path: "tired.rate"
+      type: "float"
+      description: "Tiredness gained per waking game hour."
+      defaultValue: 3.0
+      min: 0.0
+      max: 100.0
+      category: "Rates"
+
+    - name: "Tiredness at Night"
+      path: "tired.night_mult"
+      type: "float"
+      description: "Tiredness rises this many times faster between 9 pm and 6 am."
+      defaultValue: 1.5
+      min: 1.0
+      max: 5.0
+      category: "Rates"
+
+    - name: "Tiredness when Travelling"
+      path: "tired.travel_mult"
+      type: "float"
+      description: "Tiredness rises this many times faster while he is on the move."
+      defaultValue: 1.5
+      min: 1.0
+      max: 5.0
+      category: "Rates"
+
+    - name: "Tiredness Drain (asleep)"
+      path: "tired.sleep_drain"
+      type: "float"
+      description: "Tiredness lost per game hour of sleep. He sleeps when you sleep with him close by."
+      defaultValue: 15.0
+      min: 0.0
+      max: 200.0
+      category: "Rates"
+
+    - name: "Nap Rest"
+      path: "tired.nap_drain"
+      type: "float"
+      description: "Tiredness lost per game hour while he naps on his own. Naps are short, so this is faster than sleep."
+      defaultValue: 30.0
+      min: 0.0
+      max: 200.0
+      category: "Rates"
+
+    - name: "Restlessness While Tired"
+      path: "tired.restless_mult"
+      type: "float"
+      description: "While tiredness is strong, idle restlessness rises only this fraction as fast (a worn-out dog doesn't fidget), and it drops out of his prompt."
+      defaultValue: 0.2
+      min: 0.0
+      max: 1.0
+      category: "Rates"
+
+    - name: "Separation Rise (apart)"
+      path: "separation.apart_rate"
+      type: "float"
+      description: "How fast he starts missing you, per game hour away from you."
+      defaultValue: 20.0
+      min: 0.0
+      max: 200.0
+      category: "Rates"
+
+    - name: "Separation Drain (together)"
+      path: "separation.near_drain"
+      type: "float"
+      description: "How fast that settles, per game hour close to you."
+      defaultValue: 30.0
+      min: 0.0
+      max: 200.0
+      category: "Rates"
+
+    - name: "Close-by Distance"
+      path: "separation.near_distance"
+      type: "float"
+      description: "Within this many units of you (and in the same space) counts as together. About 70 units is a metre."
+      defaultValue: 1500.0
+      min: 200.0
+      max: 10000.0
+      category: "Rates"
+
+    # --- Combat --------------------------------------------------------------------------------------
+    - name: "Hunger in Combat"
+      path: "combat.hunger_mult"
+      type: "float"
+      description: "Hunger rises this many times faster while he is fighting."
+      defaultValue: 1.5
+      min: 1.0
+      max: 5.0
+      category: "Combat"
+
+    - name: "Restlessness Drain in Combat"
+      path: "combat.restless_drain"
+      type: "float"
+      description: "Restlessness lost per game hour of fighting."
+      defaultValue: 60.0
+      min: 0.0
+      max: 300.0
+      category: "Combat"
+
+    - name: "Tiredness in Combat"
+      path: "combat.tired_mult"
+      type: "float"
+      description: "Tiredness rises this many times faster while he is fighting."
+      defaultValue: 2.0
+      min: 1.0
+      max: 5.0
+      category: "Combat"
+
+    # --- Feeding -------------------------------------------------------------------------------------
+    - name: "Hunger per Food Item"
+      path: "feeding.per_item"
+      type: "float"
+      description: "Hunger removed for each food item he eats. Any food that lands in his inventory (handed over, a gift menu, another mod's action) is eaten once no menu is open."
+      defaultValue: 25.0
+      min: 0.0
+      max: 100.0
+      category: "Feeding"
+
+    - name: "Raw Meat Bonus"
+      path: "feeding.raw_bonus"
+      type: "float"
+      description: "Extra hunger removed per raw food item (a dog's favourite)."
+      defaultValue: 5.0
+      min: 0.0
+      max: 50.0
+      category: "Feeding"
+
+    - name: "Most per Meal"
+      path: "feeding.max_meal"
+      type: "float"
+      description: "The most hunger one meal can remove, however much you give."
+      defaultValue: 70.0
+      min: 0.0
+      max: 100.0
+      category: "Feeding"
+
+    - name: "Hunger per Carcass"
+      path: "feeding.carcass_meal"
+      type: "float"
+      description: "Hunger removed when he eats from a carcass."
+      defaultValue: 50.0
+      min: 0.0
+      max: 100.0
+      category: "Feeding"
+
+    - name: "Carcass Meat"
+      path: "feeding.carcass_meat"
+      type: "int"
+      description: "Whose bodies he'll eat from. 0 = animals only. 1 = auto: people too while you wear the Ring of Namira or are a werewolf. 2 = any meat: people too, always. Never children, at any setting. People get the bloody feeding effect; animals don't."
+      defaultValue: 0
+      min: 0
+      max: 2
+      category: "Feeding"
+
+    # --- Petting -------------------------------------------------------------------------------------
+    - name: "Pet Hotkey"
+      path: "petting.hotkey"
+      type: "hotkey"
+      description: "Press near him to kneel and scratch his ears. Use it together with the modifiers below. -1 = off."
+      defaultValue: -1
+      min: -1
+      max: 255
+      category: "Petting"
+
+    - name: "Pet Hotkey Modifiers"
+      path: "petting.modifiers"
+      type: "int"
+      description: "Keys to hold with the hotkey: 1 = Ctrl, 2 = Shift, 4 = Alt; add them up (3 = Ctrl+Shift). 0 = none. Exactly these must be held."
+      defaultValue: 2
+      min: 0
+      max: 7
+      category: "Petting"
+
+    - name: "Pet Range"
+      path: "petting.range"
+      type: "float"
+      description: "How close you must be for the hotkey to work, in units (about 70 to a metre)."
+      defaultValue: 250.0
+      min: 100.0
+      max: 1000.0
+      category: "Petting"
+
+    - name: "Pet by Activating"
+      path: "petting.on_activate"
+      type: "bool"
+      description: "Also count activating him with empty hands as petting. Off by default: other mods' dialogue menus open on activation."
+      defaultValue: false
+      category: "Petting"
+
+    - name: "Affection per Pet"
+      path: "petting.affection"
+      type: "float"
+      description: "Need for affection removed when you pet him."
+      defaultValue: 25.0
+      min: 0.0
+      max: 100.0
+      category: "Petting"
+
+    - name: "Separation per Pet"
+      path: "petting.separation"
+      type: "float"
+      description: "How much a pet settles his missing you."
+      defaultValue: 15.0
+      min: 0.0
+      max: 100.0
+      category: "Petting"
+
+    - name: "Petting Cooldown (seconds)"
+      path: "petting.cooldown"
+      type: "float"
+      description: "Real seconds before another pet counts."
+      defaultValue: 60.0
+      min: 0.0
+      max: 600.0
+      category: "Petting"
+
+    - name: "Activation Only While Sneaking"
+      path: "petting.require_sneak"
+      type: "bool"
+      description: "With Pet by Activating on: count it only while you are crouched, so ordinary activations stay ordinary."
+      defaultValue: false
+      category: "Petting"
+
+    # --- Behavior Loop -------------------------------------------------------------------------------
+    - name: "Behavior Loop"
+      path: "loop.enabled"
+      type: "bool"
+      description: "In quiet moments (nobody talking, no fighting, no menus, you close by) SkyrimNet's decisions model picks what he does next from his needs: beg, nap, seek affection or nothing. One small decision call per check."
+      defaultValue: true
+      category: "Behavior Loop"
+
+    - name: "Check Every (min seconds)"
+      path: "loop.min_seconds"
+      type: "float"
+      description: "Shortest real-time wait between checks."
+      defaultValue: 45.0
+      min: 15.0
+      max: 1800.0
+      category: "Behavior Loop"
+
+    - name: "Check Every (max seconds)"
+      path: "loop.max_seconds"
+      type: "float"
+      description: "Longest real-time wait between checks; each wait is random in between."
+      defaultValue: 90.0
+      min: 15.0
+      max: 1800.0
+      category: "Behavior Loop"
+
+    - name: "Quiet For (seconds)"
+      path: "loop.quiet_seconds"
+      type: "float"
+      description: "Nobody nearby may have spoken for this long before he does something on his own."
+      defaultValue: 20.0
+      min: 0.0
+      max: 300.0
+      category: "Behavior Loop"
+
+    - name: "Confidence Needed"
+      path: "loop.confidence"
+      type: "float"
+      description: "How sure the decisions model must be (0-1) before he acts on its choice."
+      defaultValue: 0.5
+      min: 0.0
+      max: 1.0
+      category: "Behavior Loop"
+
+    # --- Hearing -------------------------------------------------------------------------------------
+    - name: "Hearing"
+      path: "perception.enabled"
+      type: "bool"
+      description: "When you speak to him (aloud or over the mind-link), SkyrimNet's decisions model hears how you meant it: praise, a scolding, an offer of food, or anything else. One small decision call per line addressed to him."
+      defaultValue: true
+      category: "Hearing"
+
+    - name: "Affection per Praise"
+      path: "perception.praise_affection"
+      type: "float"
+      description: "How much praise (\"good boy!\") satisfies his need for affection."
+      defaultValue: 10.0
+      min: 0.0
+      max: 100.0
+      category: "Hearing"
+
+    - name: "Unsettled by Scolding"
+      path: "perception.scold_affection"
+      type: "float"
+      description: "How much a scolding raises his need for affection: he wants to make up."
+      defaultValue: 5.0
+      min: 0.0
+      max: 100.0
+      category: "Hearing"
+
+    - name: "Talk to Feed"
+      path: "perception.talk_feed"
+      type: "bool"
+      description: "When you offer him food in words (\"here boy, have this sweetroll\"), one matching food moves from your pack to him and he eats it. The food you name wins; otherwise raw meat, then any food. Drinks only when named."
+      defaultValue: true
+      category: "Hearing"
+
+    - name: "Confidence Needed"
+      path: "perception.confidence"
+      type: "float"
+      description: "How sure the decisions model must be (0-1) before a line counts as praise, scolding or food."
+      defaultValue: 0.6
+      min: 0.0
+      max: 1.0
+      category: "Hearing"
+
+    # --- Training ------------------------------------------------------------------------------------
+    - name: "Training"
+      path: "training.enabled"
+      type: "bool"
+      description: "Praise or a scolding within a minute after one of his actions (playing, sniffing someone, begging, napping, seeking a scratch, eating) is remembered for that action. Once a lean is clear he has \"learned\" it: his dialogue and his choice of what to do next see a plain sentence such as \"he has learned that you are usually pleased when he races about\". No numbers ever reach his prompts, and no memories are written."
+      defaultValue: true
+      category: "Training"
+
+    - name: "Lessons Fade (game hours)"
+      path: "training.half_life"
+      type: "float"
+      description: "Game hours for a lesson to fade to half its strength, so old lessons soften and he can be retrained. 0 = lessons never fade."
+      defaultValue: 72.0
+      min: 0.0
+      max: 1000.0
+      category: "Training"
+
+    # --- Dreams --------------------------------------------------------------------------------------
+    - name: "Dreams"
+      path: "dreams.enabled"
+      type: "bool"
+      description: "When you sleep with him close by (one dream per 4 hours slept, up to 3), or after a long nap, SkyrimNet writes a short dream from his side and adds it to his recent events, so it comes up in what he says next: smells, chases, food, you. One small LLM call per sleep or nap."
+      defaultValue: true
+      category: "Dreams"
+
+    - name: "Nap Dream After (minutes)"
+      path: "dreams.nap_minutes"
+      type: "float"
+      description: "Real minutes he must have lain asleep before a nap can bring a dream. 0 = only nights bring dreams."
+      defaultValue: 5.0
+      min: 0.0
+      max: 60.0
+      category: "Dreams"
+
+    # --- Events --------------------------------------------------------------------------------------
+    - name: "Tell SkyrimNet"
+      path: "events.enabled"
+      type: "bool"
+      description: "Post a short event when he eats, is petted or does something on his own, so he and the people nearby know it happened."
+      defaultValue: true
+      category: "Events"
+
+    - name: "As Narration"
+      path: "events.narrate"
+      type: "bool"
+      description: "Send his meals, pets and the things he does on his own as narration, so he reacts to them (a bark, a wag, a few words over the mind-link). Off: they are quiet events that only add to what he and the people nearby remember. Each narration is one dialogue call."
+      defaultValue: true
+      category: "Events"
+
+    - name: "Quiet Barks"
+      path: "events.quiet_barks"
+      type: "int"
+      description: "Which of his barks are switched off, for him only (other dogs are unaffected). 0 = none. 1 = the random barks while he idles (DogBarkStanding, DogBarkRunIdle, IdleDogBarkStanding); he still barks when he talks. 2 = also the barks that play while he talks, so he only barks in combat and when Canine Drives has him bark (after praise or petting, at the end of a play), which then plays as a bark sound. At 1 or 2 his random bark animations (the ones the dog animations pick on their own) are also swapped for quiet ones: a head tilt, a look around, or a yawn when he's tired."
+      defaultValue: 1
+      min: 0
+      max: 2
+      category: "Events"
+
+    - name: "Greet"
+      path: "events.greet"
+      type: "bool"
+      description: "When he isn't following you and you come back after leaving him a while, he runs over to greet you (a few happy barks if he can't get to you)."
+      defaultValue: true
+      category: "Events"
+
+    - name: "Smell"
+      path: "events.smell"
+      type: "bool"
+      description: "He smells hostile creatures and people nearby before you see them, and his prompt says what and roughly where, so he can growl or warn you."
+      defaultValue: true
+      category: "Events"
+
+    - name: "Take Owned Food"
+      path: "events.take_owned_food"
+      type: "bool"
+      description: "He may help himself to food that belongs to someone: off their table, or out of their pack. Off: only scraps nobody owns. Nobody is charged with a crime either way (a dog can't be); the owner may well have something to say about it."
+      defaultValue: true
+      category: "Events"
+
+    - name: "Owners Charge You"
+      path: "events.charge_player"
+      type: "bool"
+      description: "When he takes owned food, the game counts it as your theft: the owner may confront you or want paying, since a dog can't be fined. Off: he takes it without any crime, and only the narration tells the owner."
+      defaultValue: true
+      category: "Events"
+
+    - name: "NPCs Pet Him"
+      path: "events.npc_pet"
+      type: "bool"
+      description: "A person standing right beside him can pet him: they kneel where they stand and scratch his ears, and his need for affection drops. They never walk over to him, so nothing about their AI changes. Adds one action to the list for anyone that close. It's a quiet event, so it doesn't add a narration."
+      defaultValue: true
+      category: "Events"
+
+    - name: "NPC Pet Cooldown"
+      path: "events.npc_pet_cooldown"
+      type: "float"
+      description: "Real seconds before anyone else can pet him this way."
+      defaultValue: 180.0
+      min: 0.0
+      max: 3600.0
+      category: "Events"
+
+    - name: "Hunting"
+      path: "events.hunting"
+      type: "bool"
+      description: "When he's hungry or restless he can run down game on his own (what one bite can kill, or a fight he is fit for; never farm animals, pets or anything someone owns) and eat what he catches, and he can eat from carcasses he finds. He says so in a narration when he eats; a hunt that fails is only a quiet event."
+      defaultValue: true
+      category: "Events"
+
+    - name: "Hunt Cooldown"
+      path: "events.hunt_cooldown"
+      type: "float"
+      description: "Real minutes before he may set off on another hunt."
+      defaultValue: 10.0
+      min: 0.0
+      max: 600.0
+      category: "Events"
+
+    - name: "Kill Bite Multiple"
+      path: "events.kill_bite_multiple"
+      type: "float"
+      description: "Prey whose health, when he pounces, is at most this many of his bites (his bite damage plus Frost Bite) dies to his first bite. Anything tougher is a normal fight, which he only picks while he's at three quarters health or better and the prey has no more health than he does. 0 turns killing bites off."
+      defaultValue: 3.0
+      min: 0.0
+      max: 20.0
+      category: "Events"
+
+    - name: "Smell Range"
+      path: "events.smell_range"
+      type: "float"
+      description: "How far his nose reaches, in units (about 70 per meter). He growls or whines out loud at a new scent within three quarters of this."
+      defaultValue: 4000.0
+      min: 1000.0
+      max: 8000.0
+      category: "Events"
+
+    - name: "Smell Quiet Time"
+      path: "events.smell_quiet"
+      type: "float"
+      description: "A new scent is on his mind for about 30 seconds, and he may growl or whine at it. After that, this many seconds pass before another new scent gets his attention, so a field full of animals doesn't fill his talk. A threat close by always does."
+      defaultValue: 300.0
+      min: 0.0
+      max: 3600.0
+      category: "Events"
+
+    - name: "Sing Cooldown"
+      path: "events.sing_cooldown"
+      type: "float"
+      description: "Real minutes before he may howl along with a bard again. He only joins in when he's very restless, at most once per song."
+      defaultValue: 30.0
+      min: 0.0
+      max: 600.0
+      category: "Events"
+
+    - name: "Mind-Link Repair"
+      path: "events.leak_repair"
+      type: "bool"
+      description: "If he ever answers out loud in words, post a quiet event that the words reached only you, through the mind-link; everyone else heard barks and whines. Keeps the town from remembering a talking dog."
+      defaultValue: true
+      category: "Events"
+
+    - name: "Notifications"
+      path: "events.notify"
+      type: "bool"
+      description: "Show a note in the top-left corner when he settles down for a nap, wakes from one, or keeps a dream."
+      defaultValue: true
+      category: "Events"
+
+    # --- Combat --------------------------------------------------------------------------------------
+    - name: "Spare the Beaten"
+      path: "combat.spare_beaten"
+      type: "bool"
+      description: "He lets go of an enemy who yields or goes down beaten (bleedout), instead of biting them to death. Telling him to 'leave it' or 'back off' mid-fight calls him off too."
+      defaultValue: true
+      category: "Combat"
+
+    - name: "Combat Awareness"
+      path: "combat.awareness"
+      type: "bool"
+      description: "While he or you are fighting, his prompt lists who is in the fight within about 3000 units and how they're doing, in plain words: hurt or winded, low on magic, who they're going for, how far off. It can shape what he does, such as who he picks to attack. Adds a few lines to his prompt during fights only."
+      defaultValue: true
+      category: "Combat"
+
+    # --- Progression ---------------------------------------------------------------------------------
+    - name: "Enabled"
+      path: "progression.enabled"
+      type: "bool"
+      description: "He grows with your level, or his own if that's higher: bite, armor, magic resistance, health and speed rise in steps up to level 30 (a fifth of the level-30 value at 5, two fifths at 10, three at 15, four at 20) and smoothly after that up to the top level."
+      defaultValue: true
+      category: "Progression"
+
+    - name: "Damage Taken at Level 1"
+      path: "progression.damage_taken_start"
+      type: "float"
+      description: "How much of every hit he takes at level 1, in percent (100 = full damage, 50 = half). It eases to the top-level value as he levels. Works with any combat overhaul, since it scales the damage itself; lethal setups like SkyValor want it low."
+      defaultValue: 80.0
+      min: 5.0
+      max: 200.0
+      category: "Progression"
+
+    - name: "Damage Taken at Top Level"
+      path: "progression.damage_taken_top"
+      type: "float"
+      description: "How much of every hit he takes at the top level, in percent."
+      defaultValue: 50.0
+      min: 5.0
+      max: 200.0
+      category: "Progression"
+
+    - name: "Size at Level 1"
+      path: "progression.scale_start"
+      type: "float"
+      description: "How big he is at level 1 (1 = a normal husky). He grows evenly from this to the top-level size as he levels, and his prompt describes his size to match, with 1 as ordinary. Going much over about 1.2 can make tight spaces hard for him to get through."
+      defaultValue: 0.9
+      min: 0.5
+      max: 2.0
+      category: "Progression"
+
+    - name: "Size at Top Level"
+      path: "progression.scale_top"
+      type: "float"
+      description: "How big he is at the top level (1 = a normal husky)."
+      defaultValue: 1.1
+      min: 0.5
+      max: 2.0
+      category: "Progression"
+
+    - name: "Voice Pitch at Start"
+      path: "progression.voice_start"
+      type: "float"
+      description: "How high his barks and growls sound at level 1 (1 = as recorded; 1.12 = a lighter, younger voice). His voice moves from this to Voice Pitch at Top Level as he grows, on the same curve as his size."
+      defaultValue: 1.12
+      min: 0.7
+      max: 1.5
+      category: "Progression"
+
+    - name: "Voice Pitch at Top Level"
+      path: "progression.voice_top"
+      type: "float"
+      description: "How deep his barks and growls sound at the top level (1 = as recorded; 0.94 = a fuller, deeper voice)."
+      defaultValue: 0.94
+      min: 0.7
+      max: 1.5
+      category: "Progression"
+
+    - name: "Whine Pitch Share"
+      path: "progression.voice_whine_share"
+      type: "float"
+      description: "How much of that change his whines follow (0 = whines never change, 1 = the same as his barks). Sneezes and sniffs never change."
+      defaultValue: 0.5
+      min: 0.0
+      max: 1.0
+      category: "Progression"
+
+    - name: "Top Level"
+      path: "progression.max_level"
+      type: "int"
+      description: "The level his growth reaches its full value; past it he stays there."
+      defaultValue: 50
+      min: 31
+      max: 200
+      category: "Progression"
+
+    - name: "Bite at 30"
+      path: "progression.bite_30"
+      type: "float"
+      description: "At level 30: extra bite damage."
+      defaultValue: 12.0
+      min: 0.0
+      max: 500.0
+      category: "Progression"
+
+    - name: "Bite at Top"
+      path: "progression.bite_50"
+      type: "float"
+      description: "At the top level: extra bite damage."
+      defaultValue: 20.0
+      min: 0.0
+      max: 500.0
+      category: "Progression"
+
+    - name: "Armor at 30"
+      path: "progression.armor_30"
+      type: "float"
+      description: "At level 30: extra armor rating (vanilla: each point is about 0.12% less damage taken)."
+      defaultValue: 160.0
+      min: 0.0
+      max: 2000.0
+      category: "Progression"
+
+    - name: "Armor at Top"
+      path: "progression.armor_50"
+      type: "float"
+      description: "At the top level: extra armor rating (vanilla: each point is about 0.12% less damage taken)."
+      defaultValue: 250.0
+      min: 0.0
+      max: 2000.0
+      category: "Progression"
+
+    - name: "Magic Resist at 30"
+      path: "progression.magic_30"
+      type: "float"
+      description: "At level 30: magic resistance in percent (the game caps it at 85)."
+      defaultValue: 30.0
+      min: 0.0
+      max: 85.0
+      category: "Progression"
+
+    - name: "Magic Resist at Top"
+      path: "progression.magic_50"
+      type: "float"
+      description: "At the top level: magic resistance in percent (the game caps it at 85)."
+      defaultValue: 50.0
+      min: 0.0
+      max: 85.0
+      category: "Progression"
+
+    - name: "Health at 30"
+      path: "progression.health_30"
+      type: "float"
+      description: "At level 30: extra health."
+      defaultValue: 150.0
+      min: 0.0
+      max: 5000.0
+      category: "Progression"
+
+    - name: "Health at Top"
+      path: "progression.health_50"
+      type: "float"
+      description: "At the top level: extra health."
+      defaultValue: 300.0
+      min: 0.0
+      max: 5000.0
+      category: "Progression"
+
+    - name: "Speed at 30"
+      path: "progression.speed_30"
+      type: "float"
+      description: "At level 30: faster movement in percent (100 = twice as fast)."
+      defaultValue: 10.0
+      min: 0.0
+      max: 100.0
+      category: "Progression"
+
+    - name: "Speed at Top"
+      path: "progression.speed_50"
+      type: "float"
+      description: "At the top level: faster movement in percent (100 = twice as fast)."
+      defaultValue: 20.0
+      min: 0.0
+      max: 100.0
+      category: "Progression"
+
+    - name: "Steady Stance I Level"
+      path: "progression.steady1_level"
+      type: "int"
+      description: "The level he gains Steady Stance I: less stagger from hits (a quarter, then half, then 70% less)."
+      defaultValue: 5
+      min: 1
+      max: 200
+      category: "Progression"
+
+    - name: "Steady Stance II Level"
+      path: "progression.steady2_level"
+      type: "int"
+      description: "The level he gains Steady Stance II: less stagger from hits (a quarter, then half, then 70% less)."
+      defaultValue: 15
+      min: 1
+      max: 200
+      category: "Progression"
+
+    - name: "Steady Stance III Level"
+      path: "progression.steady3_level"
+      type: "int"
+      description: "The level he gains Steady Stance III: less stagger from hits (a quarter, then half, then 70% less)."
+      defaultValue: 30
+      min: 1
+      max: 200
+      category: "Progression"
+
+    - name: "Bowling Charge Level"
+      path: "progression.bowling_level"
+      type: "int"
+      description: "The level he gains Bowling Charge: his own attacks stagger 30% harder."
+      defaultValue: 20
+      min: 1
+      max: 200
+      category: "Progression"
+
+    # --- Prompt --------------------------------------------------------------------------------------
+    - name: "Noticeable From"
+      path: "tiers.noticeable"
+      type: "float"
+      description: "A drive at or above this shows as a light fact."
+      defaultValue: 40.0
+      min: 1.0
+      max: 100.0
+      category: "Prompt"
+
+    - name: "Strong From"
+      path: "tiers.strong"
+      type: "float"
+      description: "At or above this the need colors everything he does."
+      defaultValue: 65.0
+      min: 1.0
+      max: 100.0
+      category: "Prompt"
+
+    - name: "Urgent From"
+      path: "tiers.urgent"
+      type: "float"
+      description: "At or above this the need leads."
+      defaultValue: 85.0
+      min: 1.0
+      max: 100.0
+      category: "Prompt"
+
+    - name: "Needs Shown"
+      path: "prompt.max_drives"
+      type: "int"
+      description: "How many of his strongest needs reach the prompt."
+      defaultValue: 2
+      min: 1
+      max: 5
+      category: "Prompt"
+
+    # --- Prompt text ---------------------------------------------------------------------------------
+    - name: "Hunger: noticeable"
+      path: "text.hunger_noticeable"
+      type: "string"
+      description: "Placeholders: {name} = the dog, {player} = you. Facts about his body, not instructions."
+      defaultValue: "{name} is getting hungry; his nose follows any smell of food."
+      category: "Prompt Text"
+
+    - name: "Hunger: strong"
+      path: "text.hunger_strong"
+      type: "string"
+      description: "Placeholders: {name} = the dog, {player} = you. Facts about his body, not instructions."
+      defaultValue: "{name} is very hungry. His stomach growls, and his nose keeps turning toward any smell of meat or bread."
+      category: "Prompt Text"
+
+    - name: "Hunger: urgent"
+      path: "text.hunger_urgent"
+      type: "string"
+      description: "Placeholders: {name} = the dog, {player} = you. Facts about his body, not instructions."
+      defaultValue: "{name} is starving. Food is all he can think about; he whines and searches every corner for something to eat."
+      category: "Prompt Text"
+
+    - name: "Affection: noticeable"
+      path: "text.affection_noticeable"
+      type: "string"
+      description: "Placeholders: {name} = the dog, {player} = you. Facts about his body, not instructions."
+      defaultValue: "{name} wants some attention and keeps drifting close to {player}."
+      category: "Prompt Text"
+
+    - name: "Affection: strong"
+      path: "text.affection_strong"
+      type: "string"
+      description: "Placeholders: {name} = the dog, {player} = you. Facts about his body, not instructions."
+      defaultValue: "{name} badly wants affection. He presses against {player} and nudges for a scratch."
+      category: "Prompt Text"
+
+    - name: "Affection: urgent"
+      path: "text.affection_urgent"
+      type: "string"
+      description: "Placeholders: {name} = the dog, {player} = you. Facts about his body, not instructions."
+      defaultValue: "{name} is starved for affection; he whines softly and won't leave {player}'s side, desperate to be touched."
+      category: "Prompt Text"
+
+    - name: "Restlessness: noticeable"
+      path: "text.restless_noticeable"
+      type: "string"
+      description: "Placeholders: {name} = the dog, {player} = you. Facts about his body, not instructions."
+      defaultValue: "{name} is restless; he paces and sniffs around."
+      category: "Prompt Text"
+
+    - name: "Restlessness: strong"
+      path: "text.restless_strong"
+      type: "string"
+      description: "Placeholders: {name} = the dog, {player} = you. Facts about his body, not instructions."
+      defaultValue: "{name} is bursting with energy. He can't keep still, circling and bouncing, eager to run."
+      category: "Prompt Text"
+
+    - name: "Restlessness: urgent"
+      path: "text.restless_urgent"
+      type: "string"
+      description: "Placeholders: {name} = the dog, {player} = you. Facts about his body, not instructions."
+      defaultValue: "{name} is wild with pent-up energy; he dashes about barking, desperate to run and play."
+      category: "Prompt Text"
+
+    - name: "Tiredness: noticeable"
+      path: "text.tired_noticeable"
+      type: "string"
+      description: "Placeholders: {name} = the dog, {player} = you. Facts about his body, not instructions."
+      defaultValue: "{name} is getting sleepy; he yawns, and his steps are slower."
+      category: "Prompt Text"
+
+    - name: "Tiredness: strong"
+      path: "text.tired_strong"
+      type: "string"
+      description: "Placeholders: {name} = the dog, {player} = you. Facts about his body, not instructions."
+      defaultValue: "{name} is very tired. His eyelids droop, and he keeps looking for a soft spot to lie down."
+      category: "Prompt Text"
+
+    - name: "Tiredness: urgent"
+      path: "text.tired_urgent"
+      type: "string"
+      description: "Placeholders: {name} = the dog, {player} = you. Facts about his body, not instructions."
+      defaultValue: "{name} is exhausted. He can barely keep his eyes open and wants nothing but to curl up and sleep."
+      category: "Prompt Text"
+
+    - name: "Separation: noticeable"
+      path: "text.separation_noticeable"
+      type: "string"
+      description: "Placeholders: {name} = the dog, {player} = you. Facts about his body, not instructions."
+      defaultValue: "{name} feels {player} is too far away and keeps checking which way {player} went."
+      category: "Prompt Text"
+
+    - name: "Separation: strong"
+      path: "text.separation_strong"
+      type: "string"
+      description: "Placeholders: {name} = the dog, {player} = you. Facts about his body, not instructions."
+      defaultValue: "{name} misses {player} badly; he whines and paces, sniffing the air for {player}'s scent."
+      category: "Prompt Text"
+
+    - name: "Separation: urgent"
+      path: "text.separation_urgent"
+      type: "string"
+      description: "Placeholders: {name} = the dog, {player} = you. Facts about his body, not instructions."
+      defaultValue: "{name} is frantic without {player}. He howls and searches everywhere, unable to settle."
+      category: "Prompt Text"
+
+    # --- Runes ---------------------------------------------------------------------------------------
+    - name: "Runes"
+      path: "runes.enabled"
+      type: "bool"
+      description: "Hjalti (SN_Dog) gains runes on his coat from dragon souls: each soul the player takes while he is close by counts, and every few of them works another rune in (forelegs, then hind legs, brow, back). The runes stay dark and light up at moments."
+      defaultValue: true
+      category: "Runes"
+
+    - name: "Souls per Rune"
+      path: "runes.souls_per_unlock"
+      type: "int"
+      description: "The first rune and soul gift come with the first dragon soul he witnesses; each further one needs this many more (default 2: souls 1, 3, 5, 7...). Four runes; seven gifts (the last at 13 souls by default)."
+      defaultValue: 2
+      min: 1
+      max: 20
+      category: "Runes"
+
+    - name: "Bystanders React"
+      path: "runes.witness"
+      type: "bool"
+      description: "When he witnesses a dragon soul taken, the nearest person who can see him (a stranger before one of your companions) is the one who reacts to the narration. Off: SkyrimNet picks, which in practice is usually him or whoever you face."
+      defaultValue: true
+      category: "Runes"
+
+    - name: "Soul Gifts"
+      path: "runes.gifts"
+      type: "bool"
+      description: "Gifts from the dragon souls he witnesses, one with each rune step: Frost Bite (his bite chills and slows; stronger at the fourth and sixth steps), then Perseverance (badly hurt, the runes knit his wounds), then Frost Step (he crosses a gap in an instant). Quicker cooldowns come at the fifth step, and Frost Howl (he knocks down the foes around him) at the seventh."
+      defaultValue: true
+      category: "Runes"
+
+    - name: "Perseverance Heal"
+      path: "runes.persevere_heal"
+      type: "float"
+      description: "Perseverance (second gift): when he falls to a fifth of his health in a fight, or goes down, the runes knit this much of his health back (percent) over five seconds."
+      defaultValue: 40.0
+      min: 5.0
+      max: 100.0
+      category: "Runes"
+
+    - name: "Perseverance Cooldown"
+      path: "runes.persevere_cooldown"
+      type: "float"
+      description: "Seconds before Perseverance can come again (shorter from the fifth gift on)."
+      defaultValue: 120.0
+      min: 10.0
+      max: 1200.0
+      category: "Runes"
+
+    - name: "Frost Step"
+      path: "runes.frost_step"
+      type: "bool"
+      description: "Third gift. In a fight he can cross a gap in an instant: behind a foe he can see far off, or to your side when he falls to 30% health. He only lands on solid ground with a clear line from where he's going."
+      defaultValue: true
+      category: "Runes"
+
+    - name: "Frost Step Cooldown"
+      path: "runes.frost_step_cooldown"
+      type: "float"
+      description: "Seconds before he can Frost Step at a foe again (shorter from the fifth gift on)."
+      defaultValue: 30.0
+      min: 5.0
+      max: 600.0
+      category: "Runes"
+
+    - name: "Frost Step Escape Cooldown"
+      path: "runes.frost_step_escape_cooldown"
+      type: "float"
+      description: "Seconds before he can Frost Step to your side again (shorter from the fifth gift on)."
+      defaultValue: 90.0
+      min: 10.0
+      max: 1200.0
+      category: "Runes"
+
+    - name: "Frost Howl"
+      path: "runes.frost_howl"
+      type: "bool"
+      description: "Seventh gift. When two or more foes are close around him, or one is close while he is badly hurt, he howls, frost bursts from him, and every foe within about 300 units is knocked down where they stand. Only foes: never you, your companions, bystanders or children. No damage; it buys him a moment while they get up."
+      defaultValue: true
+      category: "Runes"
+
+    - name: "Frost Howl Cooldown"
+      path: "runes.frost_howl_cooldown"
+      type: "float"
+      description: "Seconds before he can Frost Howl again (shorter from the fifth gift on)."
+      defaultValue: 90.0
+      min: 10.0
+      max: 1200.0
+      category: "Runes"
+
+    - name: "Frost Howl Force"
+      path: "runes.frost_howl_force"
+      type: "float"
+      description: "How hard the howl shoves them. Near 0 they fall where they stand; higher throws them back. If they don't go down at all, raise it a little."
+      defaultValue: 2.0
+      min: 0.0
+      max: 50.0
+      category: "Runes"
+
+    - name: "Rune Glow Strength"
+      path: "runes.max_glow"
+      type: "float"
+      description: "How bright the runes glow at their strongest, when he witnesses a dragon soul taken. Everything else lights them less: a soul gift, a power attack, a threat on the air, a song, and faintly while he fights. 0 = never glow."
+      defaultValue: 3.0
+      min: 0.0
+      max: 10.0
+      category: "Runes"
+
+    # --- Debug ---------------------------------------------------------------------------------------
+    - name: "Log Barks"
+      path: "debug.log_barks"
+      type: "bool"
+      description: "Write each idle he starts and each bark or sound animation event to CanineDrives.log, to trace where a bark came from."
+      defaultValue: true
+      category: "Debug"
+
+    - name: "Log Combat"
+      path: "debug.log_combat"
+      type: "bool"
+      description: "Write his fights to CanineDrives.log: the hits he takes (one line per attacker and weapon or spell each second), each attack he swings, and his combat state once a second."
+      defaultValue: false
+      category: "Debug"
+
+    - name: "Log Drives"
+      path: "debug.log_changes"
+      type: "bool"
+      description: "Write the drives to CanineDrives.log (next to skse64.log) every game hour."
+      defaultValue: false
+      category: "Debug"
+
+    - name: "Set Drives"
+      path: "debug.set"
+      type: "string"
+      description: "For testing: e.g. hunger=80, tired=90 (or all=50). Applied once each time you change this text while playing. graph <label> (e.g. graph lying) writes his animation state to the log instead. bark makes him bark now; bark sound plays only the husky bark sound. sleep makes him nap now (the style picked as usual); sleep relax, sleep guarded or sleep cold forces that sleep style for this nap. playbow makes him play bow now; wiggle does the happy wiggle; rollover has him roll right over; tilt does the curious head tilt; sniffground has him nose the ground; sniffair has him sample the air; sneeze makes him sneeze; happybark, angrybark, growl, pout or sadwhine has him voice that; sneeze sound, sniff sound, big sniff sound, bark sound, angry bark sound, growl sound, whine sound, eat sound, frost step sound, frost howl sound or perseverance sound plays only that sound; pitch 1.2 plays his voice at that pitch (pitch off: his level's again); pose relax, pose guarded or pose cold has him lie in that pose, awake."
+      defaultValue: ""
+      category: "Debug"

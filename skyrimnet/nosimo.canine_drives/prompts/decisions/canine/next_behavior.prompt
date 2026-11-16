@@ -1,0 +1,43 @@
+{# Decision template: what the dog does next during a quiet moment, as one choice. Sent by Canine Drives' behavior
+   loop on the decisions model when nobody has spoken for a while and he is calm, near the player and not fighting.
+   The plugin carries the choice out itself; "idle" means he simply carries on.
+
+   Context set by the plugin: dogFormId, needs (his strongest needs as prose, may be empty), hunger, affection,
+   restless, tired, separation (0-100, higher = stronger need), indoors, hour, playerName, songNearby (a bard's song he hasn't joined yet), foodNearby (food lying loose
+   within his reach), preyNearby (game on the air he could take on), fishNearby (fish swimming in water close by he could catch), carcassNearby (a body close by he would eat from), lessons (what he has learned
+   pleases or crosses the player, as sentences, may be empty), lastBehavior, minutesSinceLast. #}
+{% set dogUUID = formid_to_uuid(dogFormId) %}
+{% set dog = decnpc(dogUUID) %}
+
+[ state dog ]
+{{ dog.name }} is a dog, a companion of {{ playerName }}.
+{% if needs != "" %}{{ needs }}{% else %}Nothing much troubles him right now.{% endif %}
+Needs, 0-100 (higher = stronger): hunger {{ hunger }}, wants affection {{ affection }}, restless {{ restless }}, tired {{ tired }}, misses {{ playerName }} {{ separation }}.
+{% if lessons != "" %}{{ lessons }}
+{% endif %}[ end state ]
+
+[ state scene ]
+{{ get_location(dogUUID) }}, {% if indoors %}indoors{% else %}outdoors{% endif %}, around {{ hour }}:00. {{ playerName }} is close by and things are quiet.{% if foodNearby %} There is food lying about within his reach; he can smell it.{% endif %}{% if preyNearby %} He can smell game nearby.{% endif %}{% if fishNearby %} Fish are swimming in the water close by.{% endif %}{% if carcassNearby %} A carcass lies close by; he can smell it.{% endif %}{% if songNearby %} A bard is playing and singing nearby.{% endif %}
+[ end state ]
+
+[ state recent ]
+{% if lastBehavior != "" %}His last behavior was "{{ lastBehavior }}", {{ minutesSinceLast }} minutes ago.{% else %}He hasn't done anything of note yet.{% endif %}
+[ end state ]
+
+[ question behavior choice ]
+Decide what {{ dog.name }} does right now, as an ordinary dog would. His strongest need usually wins, but a dog also just lies about or watches the world a lot of the time: when no need is pressing, or he did the same thing a few minutes ago, choose idle.
+[ criteria ]
+idle: he carries on as he is, watching, sniffing the air, or lying about. Right when nothing is pressing.
+beg: he sits in front of {{ playerName }} and whines for food. Right when hunger is strong (about 50 or more).
+nap: he lies down and dozes off. Right when tiredness is strong (about 60 or more) and the moment is calm.
+seek_affection: he presses against {{ playerName }}'s legs and nudges for a scratch. Right when he wants affection or misses {{ playerName }} (about 50 or more).
+play: he races about in a mad, happy run around {{ playerName }}, barking. Right when restlessness is strong (about 55 or more) and tiredness is below about 70.
+sniff: he trots over to someone close by, a person or an animal, sniffs them over and comes back. Right when he is restless (about 40 or more) and others are about.
+{% if songNearby %}sing: he sits back and howls along with the bard's song nearby, loud and off-key. Right when he is restless (about 35 or more) or the music has him worked up.
+{% endif %}{% if foodNearby %}scavenge: he noses out the food lying about nearby, snaps it up and wolfs it down. Right when hunger is strong (about 50 or more).
+{% endif %}{% if carcassNearby %}eat_carcass: he goes to the carcass nearby, tears into it and eats his fill. Right when hunger is strong (about 50 or more).
+{% endif %}{% if preyNearby %}hunt: he takes off after the game he smells, runs it down and eats what he catches. Right when hunger is strong (about 50 or more), or he is very restless (about 55 or more).
+{% endif %}{% if fishNearby %}fish: he splashes into the water after a fish (he's fond of salmon), catches it in his jaws and eats it. Right when hunger is strong (about 50 or more), or he is very restless (about 55 or more).
+{% endif %}
+[ end criteria ]
+[ end question ]

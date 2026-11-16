@@ -1,0 +1,43 @@
+{# Custom prompt: a dog's dream, kept as one of his memories. Sent by Canine Drives after the player slept with him
+   close by (at most once a night) or after a long nap of his own. The plugin stores each entry of "dreams" with PublicAddMemory.
+
+   Context set by the plugin: count (dreams wanted, 1-3), dogFormId, playerName, when ("night" or "nap"), location, indoors, needs (his
+   strongest needs as prose, may be empty), hunger, affection, restless, tired, separation (0-100, higher =
+   stronger need), memories (his newest memories without dreams, oldest first, may be empty), lessons (what he has learned
+   pleases or crosses the player, as sentences, may be empty), recentEvents (lines, oldest first, may be empty). #}
+[ system ]
+You write the dreams of an ordinary dog. A dog's dream is made of what a dog's day is made of: smells, sounds, running, chasing, digging, food, warmth, the pack, the people he loves, things that startled him. Output ONLY a JSON object. No explanation, no commentary.
+
+{# The user's world setting and tone, so the dream fits their game. #}
+{{ render_template("submodules//system_head//0010_setting") }}
+[ end system ]
+
+{% set dogUUID = formid_to_uuid(dogFormId) %}
+{% set dog = decnpc(dogUUID) %}
+[ user ]
+{{ dog.name }} is a dog, the companion of {{ playerName }}. He just {% if when == "night" %}slept through the night beside {{ playerName }}{% else %}woke from a nap{% endif %} {% if indoors %}indoors{% else %}outdoors{% endif %}, at {{ location }}.
+{% if needs != "" %}{{ needs }}{% endif %}
+His needs on waking, 0-100 (higher = stronger): hunger {{ hunger }}, wants affection {{ affection }}, restless {{ restless }}, tired {{ tired }}, misses {{ playerName }} {{ separation }}.
+{% if memories != "" %}
+His own recent memories, oldest first. They are written in human words, but he lived them as a dog: what stayed with him is the smells, sounds, places, bodies, danger and mood, not what anything meant to the people:
+{{ memories }}
+{% endif %}
+{% if lessons != "" %}
+What he has come to feel about {{ playerName }}'s moods: {{ lessons }}
+{% endif %}
+{% if recentEvents != "" %}
+What went on around him just before he slept (people's words reach him only as tone and sound, never as meaning):
+{{ recentEvents }}
+{% endif %}
+
+Write {% if count == 1 %}the dream he just had{% else %}the {{ count }} dreams he had through that sleep, in the order he had them{% endif %}, as he would remember {% if count == 1 %}it{% else %}them{% endif %}.
+- Each dream: two or three short sentences, past tense, third person. Keep each one under 350 characters; a dream is a few vivid moments, not a story.
+- Through a dog's senses: smells, sounds, movement, touch. Dream logic is fine: places blend and things are the wrong size or never end.
+- Build each dream from something he really lived, taken from his memories or the day: a fight, a place, a person, a meal, a scare. Dreams replay and twist the real thing, so it should be recognisable, seen the way a dog saw it. His needs on waking can colour it. A frightening day can make a bad dream.
+{% if count > 1 %}- Make each dream its own: a different place, a different thing he wanted or met, a different feeling. Don't repeat images between them.
+{% endif %}- His mind is a dog's: no words, plans, politics, status, romance or human ideas. People appear as smell, voice, hands and warmth. He knows them by their own name or by their smell, never by a title or rank: to him {{ playerName }} is {{ playerName }}, not a queen, a lord or a thane, even where his memories use such words.
+- Pick how each dream felt: "happy", "content", "excited", "uneasy" or "scared".
+
+Respond with ONLY this JSON, compact, with exactly {{ count }} {% if count == 1 %}entry{% else %}entries{% endif %} in "dreams":
+{% raw %}{"dreams":[{"dream":"The dream.","emotion":"<happy, content, excited, uneasy or scared>"}]}{% endraw %}
+[ end user ]

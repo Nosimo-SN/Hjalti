@@ -1,0 +1,6 @@
+{
+  "name": "caninedrives",
+  "version-string": "0.4.0",
+  "builtin-baseline": "9d27d5f185ede047ec1562ccd9a6c93a0d1a2c18",
+  "dependencies": ["spdlog", "fmt", "nlohmann-json", "directxtk", "directxmath", "rapidcsv", "xbyak"]
+}

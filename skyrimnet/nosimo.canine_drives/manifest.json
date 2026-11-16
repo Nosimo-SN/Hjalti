@@ -1,0 +1,13 @@
+{
+  "type": "bundle",
+  "id": "nosimo.canine_drives",
+  "author": "nosimo",
+  "version": "0.26.7",
+  "min_skyrimnet_version": "0.28.0",
+  "title": "Canine Drives",
+  "tagline": "Real dog needs for a dog companion: hunger, affection, restlessness, tiredness and missing you",
+  "description": "A dog companion's prompt is mostly written for people. Canine Drives gives the dog a body to think with: its SKSE plugin tracks five drives that rise and fall with game time and what the dog is doing, saved with your game. His strongest needs reach his prompt as plain facts (he is very hungry; his eyelids droop), and canine_hunger, canine_affection, canine_restless, canine_tired and canine_separation decorators give the values to actions and prompts. Rates, thresholds and the wording are on this plugin's Settings page.",
+  "tags": ["companion", "animals", "settings"],
+  "nsfw": false,
+  "mods": []
+}

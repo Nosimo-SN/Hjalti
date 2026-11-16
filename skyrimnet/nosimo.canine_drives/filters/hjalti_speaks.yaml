@@ -1,0 +1,5 @@
+kind: actor
+name: Hjalti speaks
+description: Hjalti (Canine Drives, SN_Dog.esp) can bark, whine and react even when only speech-capable races may speak. His words still reach only you, over the mind-link.
+RaceWhitelist:
+  - HjaltiRace

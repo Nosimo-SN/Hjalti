@@ -1,0 +1,27 @@
+{# Decision template: how the player meant a line spoken to the dog, as one choice. Sent by Canine Drives for each
+   player line addressed to him (he is the line's target, or he is named in it while close by). The plugin acts on
+   the choice: praise and scolding move his need for affection, feed hands him food from the player's pack.
+
+   Context set by the plugin: dogFormId, playerName, line (the player's words), telepathy (true when sent over the
+   mind-link), hunger (0-100, higher = hungrier). #}
+{% set dogUUID = formid_to_uuid(dogFormId) %}
+{% set dog = decnpc(dogUUID) %}
+
+[ state dog ]
+{{ dog.name }} is a dog, a companion of {{ playerName }}. Hunger {{ hunger }} of 100.
+[ end state ]
+
+[ state line ]
+{{ playerName }} {% if telepathy %}reached into {{ dog.name }}'s mind and sent{% else %}said to {{ dog.name }}{% endif %}: "{{ line }}"
+[ end state ]
+
+[ question meaning choice ]
+How did {{ playerName }} mean this line to {{ dog.name }}? Judge the words and their tone, the way an owner talks to a dog. A line often mixes things: when praise, a scolding or an offer of food sits alongside a command, a question or chatter ("Get him! Good boy!"), choose the praise, scolding or food.
+[ criteria ]
+praise: warm approval or love for him: "good boy", "well done", "that's my brave dog", "I love you, boy", thanks or pride in something he did.
+scold: disapproval or a telling-off: "bad dog", "no!", "stop that", "drop it", anger or disappointment at something he did.
+call_off: telling him to stop attacking or let someone go: "leave it!", "back off!", "let him go", "enough!", "heel!" in or after a fight. An order to stop fighting is call_off, not scold.
+feed: an offer of food to eat now: "here, have this sweetroll", "eat up", "want some meat?", handing him something to eat. Not a promise of food later, and not a toy or a bone to chew.
+other: anything else: questions, commands, plans, chatting, talk about other things.
+[ end criteria ]
+[ end question ]

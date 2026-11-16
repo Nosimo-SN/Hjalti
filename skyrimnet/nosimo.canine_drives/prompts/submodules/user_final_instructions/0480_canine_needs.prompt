@@ -1,0 +1,7 @@
+{# Canine Drives: the dog's strongest bodily needs. canine_needs is empty for everyone else and when he is content.
+   The name check guards against SkyrimNet handing the decorators another actor than npc (seen with an NPC that had no bio). #}
+{{ canine_seen(npc.UUID) }}{% set canineNeeds = canine_needs(npc.UUID) %}
+{% if canineNeeds and canine_name(npc.UUID) == decnpc(npc.UUID).name %}
+## What {{ decnpc(npc.UUID).name }}'s Body Wants Right Now
+{{ canineNeeds }}
+{% endif %}

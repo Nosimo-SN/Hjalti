@@ -1,0 +1,22 @@
+# build output and logs
+build/
+build-log*.txt
+
+# editor / OS clutter
+.vs/
+.vscode/
+*.user
+Thumbs.db
+__pycache__/
+
+# local only: DLL backups, release/test zips, reference art, vanilla game files and generated OAR output
+backups/
+dist/*.zip
+art-reference/
+oar/vanilla/
+oar/out/
+
+# local copies of other mods' prompts with personal tweaks (never shipped; see tools/package_release.py)
+skyrimnet/nosimo.canine_drives/prompts/submodules/character_bio/0005_sexlab_variables.prompt
+skyrimnet/nosimo.canine_drives/prompts/submodules/character_bio/0401_appearance_body_shape.prompt
+skyrimnet/nosimo.canine_drives/prompts/submodules/user_final_instructions/0501_exposure.prompt
